@@ -106,20 +106,6 @@ Register a transaction.
 ### GET /transactions/search?q=grocery
 Search transactions by keyword (uses Elasticsearch).
 
-### GET /transactions/summary
-Get total amounts and transaction count per user (Elasticsearch aggregation).
-
-**Example Response:**
-```json
-{
-  "status": "UP",
-  "components": {
-    "cassandra": {"status": "UP"},
-    "redis": {"status": "UP"},
-    "elasticsearch": {"status": "UP"}
-  }
-}
-```
 
 ## 🐳 Docker Configuration
 
