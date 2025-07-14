@@ -1,0 +1,126 @@
+spring:
+  application:
+    name: transactgrid
+  
+  # Spring Data Cassandra Configuration
+  data:
+    cassandra:
+      contact-points: 127.0.0.1
+      port: 9042
+      keyspace-name: transact_grid
+      local-datacenter: dc1
+      username: ${CASSANDRA_USERNAME:}
+      password: ${CASSANDRA_PASSWORD:}
+      request:
+        timeout: 30s
+      connection:
+        connect-timeout: 30s
+        init-query-timeout: 30s
+  
+  # Spring Redis Configuration (for auto-configuration compatibility)
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: 6379
+    password: ${REDIS_PASSWORD:}
+    database: 0
+    timeout: 5s
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: -1ms
+        max-idle: 8
+        min-idle: 0
+  
+  # Jackson Configuration
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+
+# Server Configuration
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+# Logging Configuration
+logging:
+  level:
+    com.transactgrid: DEBUG
+    com.datastax.oss.driver: WARN
+    co.elastic.clients: WARN
+    org.springframework.data.redis: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Application Configuration
+transactgrid:
+  cassandra:
+    contact-points: ${CASSANDRA_CONTACT_POINTS:127.0.0.1}
+    port: 9042
+    keyspace: transact_grid
+    datacenter: dc1
+    username: ${CASSANDRA_USERNAME:}
+    password: ${CASSANDRA_PASSWORD:}
+    
+  elasticsearch:
+    hosts: ${ELASTICSEARCH_HOSTS:localhost:9200}
+    username: ${ELASTICSEARCH_USERNAME:}
+    password: ${ELASTICSEARCH_PASSWORD:}
+    connection:
+      timeout: 10000
+      max-connections: 10
+      max-connections-per-route: 5
+    socket-timeout: 60000
+    index:
+      name: transactions
+    
+  redis:
+    cache:
+      ttl: 300 # 5 minutes in seconds
+    rate-limiting:
+      requests-per-minute: 10
+      window-size: 60
+    # Custom Redis connection settings  
+    host: ${REDIS_HOST:localhost}
+    port: 6379
+    password: ${REDIS_PASSWORD:}
+    database: 0
+    timeout: 5000
+      
+  # Business Configuration
+  search:
+    default-size: 50
+  transaction:
+    max-amount: 1000000
+    supported-currencies: ["USD", "EUR", "GBP", "JPY", "CAD"]
+    max-tags: 10
+    max-description-length: 500
+    
+  # Performance Configuration
+  async:
+    core-pool-size: 5
+    max-pool-size: 10
+    queue-capacity: 100
+    
+  # Monitoring Configuration
+  monitoring:
+    enabled: true
+    metrics-interval: 30s
+    health-check-interval: 60s
