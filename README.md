@@ -109,9 +109,6 @@ Search transactions by keyword (uses Elasticsearch).
 ### GET /transactions/summary
 Get total amounts and transaction count per user (Elasticsearch aggregation).
 
-### Health Check
-GET /actuator/health - Application health status
-
 **Example Response:**
 ```json
 {
@@ -372,78 +369,3 @@ docker exec -it transact-redis redis-cli ping
 # Test Elasticsearch connection
 curl -X GET "localhost:9200/_cluster/health"
 ```
-
-#### Performance Issues
-- **Slow queries**: Check Elasticsearch indices and Cassandra partition keys
-- **High memory usage**: Adjust JVM settings in docker-compose.yml
-- **Rate limiting**: Monitor Redis rate limit keys
-
-### Logging
-Enable debug logging in `application.yml`:
-```yaml
-logging:
-  level:
-    com.transactgrid: DEBUG
-    org.springframework.data.cassandra: DEBUG
-```
-
-## 🚀 Performance & Scaling
-
-### Cassandra Optimization
-- **Partition Strategy**: Data is partitioned by `userId` for optimal distribution
-- **Consistency Level**: QUORUM for balanced consistency and performance
-- **Batch Operations**: Use batch inserts for bulk transaction processing
-- **Compaction**: LeveledCompactionStrategy for read-heavy workloads
-
-### Redis Optimization
-- **Memory Policy**: `allkeys-lru` for cache eviction
-- **Persistence**: RDB snapshots for durability
-- **Connection Pool**: Lettuce with connection pooling
-
-### Elasticsearch Optimization
-- **Sharding**: Index sharded by date for time-based queries
-- **Refresh Interval**: Optimized for near real-time search
-- **Bulk Operations**: Batch document indexing
-
-### Production Deployment
-```yaml
-# docker-compose.prod.yml
-version: '3.8'
-services:
-  cassandra:
-    deploy:
-      replicas: 3
-      resources:
-        limits:
-          memory: 4G
-        reservations:
-          memory: 2G
-  
-  redis:
-    deploy:
-      replicas: 2
-      resources:
-        limits:
-          memory: 1G
-        reservations:
-          memory: 512M
-  
-  elasticsearch:
-    deploy:
-      replicas: 3
-      resources:
-        limits:
-          memory: 2G
-        reservations:
-          memory: 1G
-```
-
-## 🤝 Contributing
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## 📄 License
-This project is licensed under the MIT License.
